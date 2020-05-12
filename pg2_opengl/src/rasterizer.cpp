@@ -7,6 +7,9 @@
 
 double lastTime = 0.0;
 
+InputButton wireframeToggle;
+bool wireframeState = false;
+
 //initialization functions
 bool initGLFW();
 bool CreateGLFWWindow(int width, int height, const char* name, GLFWwindow** out_window);
@@ -123,6 +126,14 @@ int Rasterizer::MainLoop() {
 		UpdateDeltaTime();
 		glClearColor(0.2f, 0.3f, 0.3f, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		
+		//wireframe input toggle
+		wireframeToggle.update(glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS);
+		if (wireframeToggle.pressed()) {
+			wireframeState = !wireframeState;
+			glPolygonMode(GL_FRONT_AND_BACK, wireframeState ? GL_LINE : GL_FILL);
+		}
+
 		camera.Update();
 		//======================
 

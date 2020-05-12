@@ -103,4 +103,14 @@ template<typename T> inline void swap(T& a, T& b) {
 	b = tmp;
 }
 
+struct InputButton {
+private:
+	bool state = false;
+	bool lastState = false;
+public:
+	inline void update(bool pressed) { lastState = state; state = pressed; }
+	inline bool pressed() const { return state && !lastState; }
+	inline bool released() const { return !state && lastState; }
+};
+
 #endif

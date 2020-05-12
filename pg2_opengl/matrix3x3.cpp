@@ -9,9 +9,7 @@ Matrix3x3::Matrix3x3() {
 	}
 }
 
-Matrix3x3::Matrix3x3(const float m00, const float m01, const float m02,
-					 const float m10, const float m11, const float m12,
-					 const float m20, const float m21, const float m22) {
+Matrix3x3::Matrix3x3(const float m00, const float m01, const float m02, const float m10, const float m11, const float m12, const float m20, const float m21, const float m22) {
 	m00_ = m00;
 	m01_ = m01;
 	m02_ = m02;
@@ -57,6 +55,16 @@ float Matrix3x3::get(const int row, const int column) const {
 	return data_[column + row * 3];
 }
 
+float& Matrix3x3::operator()(int row, int col) {
+	assert(row >= 0 && row < 3 && col >= 0 && col < 3);
+	return data_[col + row * 3];
+}
+
+const float& Matrix3x3::operator()(int row, int col) const {
+	assert(row >= 0 && row < 3 && col >= 0 && col < 3);
+	return data_[col + row * 3];
+}
+
 Vector3 Matrix3x3::column(const int column) const {
 	return Vector3(get(0, column), get(1, column), get(2, column));
 }
@@ -87,4 +95,11 @@ Matrix3x3 operator*(const Matrix3x3& a, const Matrix3x3& b) {
 					 a.m20_ * b.m00_ + a.m21_ * b.m10_ + a.m22_ * b.m20_,
 					 a.m20_ * b.m01_ + a.m21_ * b.m11_ + a.m22_ * b.m21_,
 					 a.m20_ * b.m02_ + a.m21_ * b.m12_ + a.m22_ * b.m22_);
+}
+
+std::ostream& operator<<(std::ostream& os, const Matrix3x3& m) {
+	os << "[" << m.m00_ << ", " << m.m01_ << ", " << m.m02_ << std::endl
+		<< " " << m.m10_ << ", " << m.m11_ << ", " << m.m12_ << std::endl
+		<< " " << m.m20_ << ", " << m.m21_ << ", " << m.m22_ << "]";
+	return os;
 }

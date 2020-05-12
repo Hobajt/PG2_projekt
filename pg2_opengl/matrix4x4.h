@@ -10,8 +10,7 @@
 \version 1.0
 \date 2015
 */
-class Matrix4x4
-{
+class Matrix4x4 {
 public:
 	//! Výchozí konstruktor.
 	/*!
@@ -23,19 +22,21 @@ public:
 	/*!
 	Inicializace matice zadanými hodnotami. První index oznaèuje øádek, druhý index patøí sloupci.
 	*/
-	Matrix4x4( const float m00, const float m01, const float m02, const float m03,
-		const float m10, const float m11, const float m12, const float m13,
-		const float m20, const float m21, const float m22, const float m23,
-		const float m30, const float m31, const float m32, const float m33 );
+	Matrix4x4(const float m00, const float m01, const float m02, const float m03,
+			  const float m10, const float m11, const float m12, const float m13,
+			  const float m20, const float m21, const float m22, const float m23,
+			  const float m30, const float m31, const float m32, const float m33);
 
-	Matrix4x4( const Vector3 & axis_x, const Vector3 & axis_y, const Vector3 & axis_z,
-		const Vector3 & view_from );
+	Matrix4x4(const Vector3& axis_x, const Vector3& axis_y, const Vector3& axis_z,
+			  const Vector3& view_from);
 
 	//! Transpozice matice.
 	/*!
 	Provede traspozici matice vzájemnou výmìnou øádkù a sloupcù.
 	*/
-	void Transpose();
+	Matrix4x4& Transpose();
+	inline Matrix4x4& transpose() { return Transpose(); }
+	Matrix4x4 transposed() const;
 
 	//! Euklidovská inverze matice.
 	/*!
@@ -44,7 +45,8 @@ public:
 	rotaci a reflexi. Taková transformace mìní pouze orientaci a pozici objektù, úhly a
 	délky zùstávají zachovány.
 	*/
-	void EuclideanInverse();
+	Matrix4x4& EuclideanInverse();
+	inline Matrix4x4& euclideanInverse() { return EuclideanInverse(); }
 
 	//! Euklidovská inverze matice.
 	/*!
@@ -52,7 +54,7 @@ public:
 
 	\return Výsledek inverze matice \a m.
 	*/
-	static Matrix4x4 EuclideanInverse( Matrix4x4 m );
+	static Matrix4x4 EuclideanInverse(Matrix4x4 m);
 
 	//! Nastaví zadaný prvek matice na novou hodnotu.
 	/*!
@@ -60,7 +62,7 @@ public:
 	\param column sloupec matice.
 	\param value nová hodnota prvku matice.
 	*/
-	void set( const int row, const int column, const float value );
+	void set(const int row, const int column, const float value);
 
 	//! Vrátí zadaný prvek matice.
 	/*!
@@ -68,33 +70,36 @@ public:
 	\param column sloupec matice.
 	\return Požadovaný prvek matice.
 	*/
-	float get( const int row, const int column ) const;
+	float get(const int row, const int column) const;
+
+	float& operator()(int row, int col);
+	const float& operator()(int row, int col) const;
 
 	//! Ukazatel na prvky matice.
 	/*!
 	\return Ukazatel na prvky matice.
 	*/
-	float * data();
+	float* data();
 
 	Matrix3x3 so3() const;
 	Vector3 tr3() const;
-	void so3(const Matrix3x3 & m);
-	void tr3( const Vector3 & v );	
+	void so3(const Matrix3x3& m);
+	void tr3(const Vector3& v);
 
 	std::string toString() const;
 
-	static float PoseDist( const Matrix4x4 & view_t_a, const Matrix4x4 & view_t_b, const float alpha = 0.5f, const float lambda = 1.0f / 200.0f );	
+	static float PoseDist(const Matrix4x4& view_t_a, const Matrix4x4& view_t_b, const float alpha = 0.5f, const float lambda = 1.0f / 200.0f);
 
-	bool operator==( const Matrix4x4 & m ) const;
+	bool operator==(const Matrix4x4& m) const;
 
 	//friend Vector4 operator*( const Matrix4x4 & a, const Vector4 & b );
-	friend Matrix4x4 operator*( const Matrix4x4 & a, const Matrix4x4 & b );
+	friend Matrix4x4 operator*(const Matrix4x4& a, const Matrix4x4& b);
 
+	friend std::ostream& operator<<(std::ostream& os, const Matrix4x4& m);
 private:
 #pragma warning( push )
 #pragma warning ( disable : 4201 )
-	union
-	{
+	union {
 		/* Row-major
 		m00 m01 m02 m03
 		m10 m11 m12 m13
@@ -102,8 +107,7 @@ private:
 		m30 m31 m32 m33
 		*/
 
-		struct
-		{
+		struct {
 			float m00_;
 			float m01_;
 			float m02_;
@@ -133,44 +137,41 @@ private:
 typedef Matrix4x4 Matrix4;
 
 template<class T>
-class Matrix
-{
+class Matrix {
 public:
-	Matrix( const int rows, const int cols )
-	{
-		assert( ( rows > 0 ) && ( cols > 0 ) );
-		
-		data_ = new T[rows*cols];
+	Matrix(const int rows, const int cols) {
+		assert((rows > 0) && (cols > 0));
+
+		data_ = new T[rows * cols];
 		rows_ = rows;
 		cols_ = cols;
 	}
 
-	~Matrix()
-	{
-		SAFE_DELETE_ARRAY( data_ );
+	~Matrix() {
+		SAFE_DELETE_ARRAY(data_);
 		rows_ = 0;
 		cols_ = 0;
 	}
 
-	T * operator()( const int row )
-	{
-		assert( ( row >= 0 ) && ( row < rows_ ) );
+	T* operator()(const int row) {
+		assert((row >= 0) && (row < rows_));
 
 		return &data_[row * cols_];
 	}
 
-	T & operator()( const int row, const int col )
-	{
-		assert( ( row >= 0 ) && ( row < rows_ ) );
-		assert( ( col >= 0 ) && ( col < cols_ ) );
+	T& operator()(const int row, const int col) {
+		assert((row >= 0) && (row < rows_));
+		assert((col >= 0) && (col < cols_));
 
 		return data_[row * cols_ + col];
 	}
 
 private:
-	T * data_;
+	T* data_;
 	int rows_;
 	int cols_;
 };
+
+using mat4f = Matrix4x4;
 
 #endif

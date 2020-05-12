@@ -2,6 +2,7 @@
 #define MATRIX_3X3_H_
 
 #include "vector3.h"
+#include <iostream>
 
 /*! \class Matrix3x3
 \brief Reálná matice 3x3 uspoøádaná po øádcích.
@@ -33,6 +34,7 @@ public:
 	Provede traspozici matice vzájemnou výmìnou øádkù a sloupcù.
 	*/
 	Matrix3x3 Transpose() const;
+	inline Matrix3x3 transpose() const { return transpose(); }
 
 	//! Nastaví zadaný prvek matice na novou hodnotu.
 	/*!
@@ -50,6 +52,9 @@ public:
 	*/
 	float get(const int row, const int column) const;
 
+	float& operator()(int row, int col);
+	const float& operator()(int row, int col) const;
+
 	Vector3 column(const int column) const;
 	Vector3 row(const int row) const;
 
@@ -57,6 +62,8 @@ public:
 
 	friend Vector3 operator*(const Matrix3x3& a, const Vector3& b);
 	friend Matrix3x3 operator*(const Matrix3x3& a, const Matrix3x3& b);
+
+	friend std::ostream& operator<<(std::ostream& os, const Matrix3x3& m);
 
 private:
 #pragma warning( push )
@@ -82,11 +89,17 @@ private:
 			float m22_;
 		};
 
+		struct {
+			Vector3 r_[3];
+		};
+
 		float data_[3 * 3];
 	};
 #pragma warning( pop ) 
 };
 
 typedef Matrix3x3 Matrix3;
+
+using mat3f = Matrix3x3;
 
 #endif

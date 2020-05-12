@@ -18,7 +18,7 @@ float Vector3::SqrL2Norm() const {
 	return sqr(x) + sqr(y) + sqr(z);
 }
 
-float Vector3::Normalize() {
+Vector3& Vector3::Normalize() {
 	const float sqr_norm = SqrL2Norm();
 
 	if (sqr_norm != 0.0f) {
@@ -28,11 +28,21 @@ float Vector3::Normalize() {
 		x *= rn;
 		y *= rn;
 		z *= rn;
-
-		return norm;
 	}
 
-	return 0.0f;
+	return *this;
+}
+
+Vector3 Vector3::normalized() const {
+	const float sqr_norm = SqrL2Norm();
+
+	if (sqr_norm != 0.0f) {
+		const float norm = sqrt(sqr_norm);
+		const float rn = 1.0f / norm;
+
+		return Vector3{ x * rn, y * rn, z * rn };
+	}
+	return Vector3{ x,y,z };
 }
 
 Vector3 Vector3::CrossProduct(const Vector3& v) const {
@@ -134,4 +144,47 @@ void operator/=(Vector3& v, const float a) {
 	v.x *= r;
 	v.y *= r;
 	v.z *= r;
+}
+
+std::ostream& operator<<(std::ostream& os, const Vector3& v) {
+	os << "(" << v.x << ", " << v.y << ", " << v.z << ")" << std::endl;
+	return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const vec2f& v) {
+	os << "(" << v.x << ", " << v.y << ")" << std::endl;
+	return os;
+}
+
+vec2f& vec2f::clamp(float min, float max) {
+	x = std::clamp(x, min, max);
+	y = std::clamp(y, min, max);
+
+	return *this;
+}
+
+vec2f vec2f::operator-(const vec2f& rhs) {
+	return vec2f{ x - rhs.x, y - rhs.y };
+}
+
+vec2f vec2f::operator*(float f) {
+	return vec2f{ f * x, f * y };
+}
+
+vec2f vec2f::operator-=(const vec2f& rhs) {
+	x -= rhs.x;
+	y -= rhs.y;
+	return *this;
+}
+
+vec2f vec2f::operator+=(const vec2f& rhs) {
+	x += rhs.x;
+	y += rhs.y;
+	return *this;
+}
+
+vec2f vec2f::operator*=(float f) {
+	x *= f;
+	y *= f;
+	return *this;
 }

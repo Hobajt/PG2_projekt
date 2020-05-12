@@ -15,6 +15,7 @@
 #include <math.h>
 #include <assert.h>
 #include <functional>
+#include <algorithm>
 
 // Glad - multi-Language GL/GLES/EGL/GLX/WGL loader-generator based on the official specs
 #include <glad/glad.h>

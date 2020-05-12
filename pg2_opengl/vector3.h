@@ -1,6 +1,8 @@
 #ifndef VECTOR3_H_
 #define VECTOR3_H_
 
+#include <iostream>
+
 /*! \struct Vector3
 \brief Trojrozmìrný (3D) vektor.
 
@@ -75,7 +77,9 @@ public:
 	/*!
 	Po provedení operace bude mít vektor jednotkovou délku.
 	*/
-	float Normalize();
+	Vector3& Normalize();
+	inline Vector3& normalize() { return Normalize(); }
+	Vector3 normalized() const;
 
 	//! Vektorový souèin.
 	/*!
@@ -86,6 +90,7 @@ public:
 	\mathbf{u}_x \mathbf{v}_y - \mathbf{u}_y \mathbf{v}_x)\f$.
 	*/
 	Vector3 CrossProduct(const Vector3& v) const;
+	inline Vector3 cross(const Vector3& v) const { return CrossProduct(v); }
 
 	Vector3 Abs() const;
 
@@ -96,6 +101,7 @@ public:
 	\return Hodnotu \f$\mathbf{u}_x \mathbf{v}_x + \mathbf{u}_y \mathbf{v}_y + \mathbf{u}_z \mathbf{v}_z)\f$.
 	*/
 	float DotProduct(const Vector3& v) const;
+	inline float dot(const Vector3& v) const { return DotProduct(v); }
 
 	//! Rotace.
 	/*!
@@ -130,6 +136,27 @@ public:
 	friend void operator-=(Vector3& u, const Vector3& v);
 	friend void operator*=(Vector3& v, const float a);
 	friend void operator/=(Vector3& v, const float a);
+
+	friend std::ostream& operator<<(std::ostream& os, const Vector3& v);
+};
+
+using vec3f = Vector3;
+
+
+struct vec2f {
+public:
+	float x, y;
+
+	vec2f& clamp(float min, float max);
+
+	vec2f operator - (const vec2f& rhs);
+	vec2f operator * (float f);
+
+	vec2f operator -= (const vec2f& rhs);
+	vec2f operator += (const vec2f& rhs);
+	vec2f operator *= (float f);
+
+	friend std::ostream& operator<<(std::ostream& os, const vec2f& v);
 };
 
 #endif

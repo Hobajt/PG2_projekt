@@ -84,43 +84,15 @@ GLint CheckShader(const GLenum shader) {
 //================================= Rasterizer =================================
 
 Rasterizer::Rasterizer(int width, int height, float fovY_deg, const vec3f& viewFrom, const vec3f& viewAt, float nearPlane, float farPlane)
-	: camera(Camera(width, height, fovY_deg, viewFrom, viewAt)) {
+	: camera(Camera(width, height, fovY_deg, viewFrom, viewAt, nearPlane, farPlane)) {
 	InitDevice();
 }
 
 //TODO: delet dis
 GLuint shader_program;
-GLuint vao;
 
 void Rasterizer::LoadScene(const char* filepath) {
-	// setup vertex buffer as AoS (array of structures)
-	GLfloat vertices[] = {
-		-0.9f, 0.9f, 0.0f,  0.0f, 1.0f, // vertex 0 : p0.x, p0.y, p0.z, t0.u, t0.v
-		0.9f, 0.9f, 0.0f,   1.0f, 1.0f, // vertex 1 : p1.x, p1.y, p1.z, t1.u, t1.v
-		0.0f, -0.9f, 0.0f,  0.5f, 0.0f  // vertex 2 : p2.x, p2.y, p2.z, t2.u, t2.v
-	};
-	const int no_vertices = 3;
-	const int vertex_stride = sizeof(vertices) / no_vertices;
-	// optional index array
-	unsigned int indices[] = { 0, 1, 2 };
-
-	vao = 0;
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-	GLuint vbo = 0;
-	glGenBuffers(1, &vbo); // generate vertex buffer object (one of OpenGL objects) and get the unique ID corresponding to that buffer
-	glBindBuffer(GL_ARRAY_BUFFER, vbo); // bind the newly created buffer to the GL_ARRAY_BUFFER target
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); // copies the previously defined vertex data into the buffer's memory
-	// vertex position
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, vertex_stride, 0);
-	glEnableVertexAttribArray(0);
-	// vertex texture coordinates
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, vertex_stride, (void*)(sizeof(float) * 3));
-	glEnableVertexAttribArray(1);
-	GLuint ebo = 0; // optional buffer of indices
-	glGenBuffers(1, &ebo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	scene = Scene(filepath);
 
 	GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
 	const char* vertex_shader_source = LoadShader("res/shaders/basic_shader.vert");
@@ -161,8 +133,7 @@ int Rasterizer::MainLoop() {
 		else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 			camera.MoveForward(-0.1f);
 
-		glBindVertexArray(vao);
-		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+		scene.Draw();
 
 		//======================
 		glfwSwapBuffers(window);

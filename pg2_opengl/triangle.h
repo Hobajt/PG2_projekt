@@ -41,6 +41,8 @@ public:
 	*/
 	Vertex vertex(const int i);
 
+	Vertex& operator[](int i) { return vertices_[i]; }
+	const Vertex& operator[](int i) const { return vertices_[i]; }
 private:
 	Vertex vertices_[3]; /*!< Vrcholy trojúhelníka. Nic jiného tu nesmí bıt, jinak padne VBO v OpenGL! */
 };

@@ -68,3 +68,20 @@ void Surface::set_material(Material* material) {
 Material* Surface::get_material() const {
 	return material_;
 }
+
+void Surface::setMaterialIdx() {
+	int mIdx = material_->idx;
+
+	for (int i = 0; i < n_; i++) {
+		Triangle& t = triangles_[i];
+
+		t[0].matIdx = mIdx;
+		t[1].matIdx = mIdx;
+		t[2].matIdx = mIdx;
+	}
+}
+
+int Surface::copyTriangles(Triangle* buffer, int offset) const {
+	memcpy(buffer + offset, triangles_, n_ * sizeof(Triangle));
+	return n_;
+}

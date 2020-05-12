@@ -84,6 +84,9 @@ public:
 	*/
 	Material* get_material() const;
 
+	void setMaterialIdx();
+
+	int copyTriangles(Triangle* buffer, int offset) const;
 protected:
 
 private:

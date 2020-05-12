@@ -16,7 +16,7 @@ class Camera {
 public:
 	Camera() {}
 
-	Camera(const int width, const int height, const float fov_y, const Vector3& view_from, const Vector3& view_at);
+	Camera(const int width, const int height, const float fov_y, const Vector3& view_from, const Vector3& view_at, float nearPlane = 1.f, float farPlane = 100.f);
 
 	//Updates view & viewProjection matrices.
 	void Update();
@@ -53,7 +53,7 @@ private:
 
 	Matrix3x3 M_c_w_; // transformation matrix from CS -> WS	
 
-	float n = 1.f;
+	float n = 0.1f;
 	float f = 100.f;
 };
 

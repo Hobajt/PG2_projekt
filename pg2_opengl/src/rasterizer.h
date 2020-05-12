@@ -2,6 +2,7 @@
 
 #include "vector3.h"
 #include "camera.h"
+#include "scene.h"
 
 struct GLFWwindow;
 
@@ -19,8 +20,9 @@ private:
 	void InitDevice();
 	void UpdateDeltaTime();
 public:
-	Camera camera;
 	GLFWwindow* window;
+	Camera camera;
+	Scene scene;
 
 	float deltaTime;
 };

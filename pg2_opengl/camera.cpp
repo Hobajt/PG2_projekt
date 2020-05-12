@@ -2,13 +2,16 @@
 #include "camera.h"
 #include "mymath.h"
 
-Camera::Camera(const int width, const int height, const float fov_y, const Vector3& view_from, const Vector3& view_at) {
+Camera::Camera(const int width, const int height, const float fov_y, const Vector3& view_from, const Vector3& view_at, float nearPlane, float farPlane) {
 	width_ = width;
 	height_ = height;
 	fov_y_ = fov_y;
 
 	viewFrom = view_from;
 	viewAt = view_at;
+
+	n = nearPlane;
+	f = farPlane;
 
 	UpdateViewport(width, height);
 

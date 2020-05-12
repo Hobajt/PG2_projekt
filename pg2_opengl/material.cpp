@@ -139,3 +139,11 @@ float Material::roughness(const Coord2f* tex_coord) const {
 Color3f Material::emission(const Coord2f* tex_coord) const {
 	return emission_;
 }
+
+GLMaterial Material::GenerateGLMaterial() {
+	GLMaterial mat;
+
+	mat.diffuse = diffuse_;
+
+	return mat;
+}

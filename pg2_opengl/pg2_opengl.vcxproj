@@ -177,6 +177,7 @@
     <ClInclude Include="src\log.h" />
     <ClInclude Include="src\quat.h" />
     <ClInclude Include="src\rasterizer.h" />
+    <ClInclude Include="src\scene.h" />
     <ClInclude Include="structs.h" />
     <ClInclude Include="surface.h" />
     <ClInclude Include="texture.h" />
@@ -204,6 +205,7 @@
     <ClCompile Include="pg2_opengl.cpp" />
     <ClCompile Include="src\quat.cpp" />
     <ClCompile Include="src\rasterizer.cpp" />
+    <ClCompile Include="src\scene.cpp" />
     <ClCompile Include="structs.cpp" />
     <ClCompile Include="surface.cpp" />
     <ClCompile Include="texture.cpp" />

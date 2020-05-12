@@ -23,67 +23,6 @@ void glfwCallback(const int error, const char* description);
 void GLAPIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* user_param);
 void framebufferResizeCallback(GLFWwindow* window, int width, int height);
 
-/* load shader code from text file */
-char* LoadShader(const char* file_name) {
-	FILE* file = fopen(file_name, "rt");
-
-	if (file == NULL) {
-		printf("IO error: File '%s' not found.\n", file_name);
-
-		return NULL;
-	}
-
-	size_t file_size = static_cast<size_t>(GetFileSize64(file_name));
-	char* shader = NULL;
-
-	if (file_size < 1) {
-		printf("Shader error: File '%s' is empty.\n", file_name);
-	}
-	else {
-		/* v glShaderSource nezadáváme v posledním parametru délku,
-		takže øetìzec musí být null terminated, proto +1 a reset na 0*/
-		shader = new char[file_size + 1];
-		memset(shader, 0, sizeof(*shader) * (file_size + 1));
-
-		size_t bytes = 0; // poèet již naètených bytù
-
-		do {
-			bytes += fread(shader, sizeof(char), file_size, file);
-		} while (!feof(file) && (bytes < file_size));
-
-		if (!feof(file) && (bytes != file_size)) {
-			printf("IO error: Unexpected end of file '%s' encountered.\n", file_name);
-		}
-	}
-
-	fclose(file);
-	file = NULL;
-
-	return shader;
-}
-
-/* check shader for completeness */
-GLint CheckShader(const GLenum shader) {
-	GLint status = 0;
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
-
-	printf("Shader compilation %s.\n", (status == GL_TRUE) ? "was successful" : "FAILED");
-
-	if (status == GL_FALSE) {
-		int info_length = 0;
-		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &info_length);
-		char* info_log = new char[info_length];
-		memset(info_log, 0, sizeof(*info_log) * info_length);
-		glGetShaderInfoLog(shader, info_length, &info_length, info_log);
-
-		printf("Error log: %s\n", info_log);
-
-		SAFE_DELETE_ARRAY(info_log);
-	}
-
-	return status;
-}
-
 //================================= Rasterizer =================================
 
 Rasterizer::Rasterizer(int width, int height, float fovY_deg, const vec3f& viewFrom, const vec3f& viewAt, float nearPlane, float farPlane)
@@ -91,35 +30,13 @@ Rasterizer::Rasterizer(int width, int height, float fovY_deg, const vec3f& viewF
 	InitDevice();
 }
 
-//TODO: delet dis
-GLuint shader_program;
-
-void Rasterizer::LoadScene(const char* filepath) {
+void Rasterizer::LoadScene(const char* filepath, const char* vShaderPath, const char* fShaderPath) {
 	scene = Scene(filepath);
-
-	GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-	const char* vertex_shader_source = LoadShader("res/shaders/basic_shader.vert");
-	glShaderSource(vertex_shader, 1, &vertex_shader_source, nullptr);
-	glCompileShader(vertex_shader);
-	SAFE_DELETE_ARRAY(vertex_shader_source);
-	CheckShader(vertex_shader);
-
-	GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	const char* fragment_shader_source = LoadShader("res/shaders/basic_shader.frag");
-	glShaderSource(fragment_shader, 1, &fragment_shader_source, nullptr);
-	glCompileShader(fragment_shader);
-	SAFE_DELETE_ARRAY(fragment_shader_source);
-	CheckShader(fragment_shader);
-
-	shader_program = glCreateProgram();
-	glAttachShader(shader_program, vertex_shader);
-	glAttachShader(shader_program, fragment_shader);
-	glLinkProgram(shader_program);
-	// TODO check linking
-	glUseProgram(shader_program);
+	shader = ShaderProgram(vShaderPath, fShaderPath);
 }
 
 int Rasterizer::MainLoop() {
+	shader.Bind();
 
 	lastTime = glfwGetTime();
 	while (!glfwWindowShouldClose(window)) {
@@ -138,7 +55,8 @@ int Rasterizer::MainLoop() {
 		//======================
 
 		//do stuff here
-		SetMatrix4x4(shader_program, camera.VP.data(), "MVP");
+		shader.UploadMat4("MVP", camera.VP.data());
+
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 			camera.MoveForward(0.1f);
 		else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)

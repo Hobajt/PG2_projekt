@@ -178,6 +178,7 @@
     <ClInclude Include="src\quat.h" />
     <ClInclude Include="src\rasterizer.h" />
     <ClInclude Include="src\scene.h" />
+    <ClInclude Include="src\shader.h" />
     <ClInclude Include="structs.h" />
     <ClInclude Include="surface.h" />
     <ClInclude Include="texture.h" />
@@ -206,6 +207,7 @@
     <ClCompile Include="src\quat.cpp" />
     <ClCompile Include="src\rasterizer.cpp" />
     <ClCompile Include="src\scene.cpp" />
+    <ClCompile Include="src\shader.cpp" />
     <ClCompile Include="structs.cpp" />
     <ClCompile Include="surface.cpp" />
     <ClCompile Include="texture.cpp" />

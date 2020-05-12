@@ -2,6 +2,9 @@
 #include "tutorials.h"
 #include "utils.h"
 
+#include "camera.h"
+#include "glutils.h"
+
 /* OpenGL check state */
 bool check_gl(const GLenum error) {
 	if (error != GL_NO_ERROR) {
@@ -198,10 +201,27 @@ int tutorial_1(const int width, const int height) {
 	glLineWidth(2.0f);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+
+	vec3f cameraPos = vec3f{ 0.f, 0.f, -10.f };
+	vec3f modelPos = vec3f{ 0.f, 0.f, 0.f };
+
+	Camera cam = Camera(width, height, 40.f, cameraPos, modelPos);
+	//Matrix4x4 MVP
+
 	// main loop
 	while (!glfwWindowShouldClose(window)) {
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // state setting function
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); // state using function
+
+		cam.Update();
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+			cam.MoveForward(0.1f);
+		}
+		else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+			cam.MoveForward(-0.1f);
+		}
+
+		SetMatrix4x4(shader_program, cam.VP.data(), "MVP");
 
 		glBindVertexArray(vao);
 		//glDrawArrays( GL_TRIANGLES, 0, 3 );

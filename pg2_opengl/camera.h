@@ -28,6 +28,9 @@ public:
 	void UpdateViewport(int width, int height);
 
 	void MoveForward(float dt);
+
+	inline int GetWidth() const { return width_; }
+	inline int GetHeight() const { return height_; }
 public:
 	mat4f P;
 	mat4f V;

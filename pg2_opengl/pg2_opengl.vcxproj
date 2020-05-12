@@ -174,12 +174,13 @@
     <ClInclude Include="mymath.h" />
     <ClInclude Include="objloader.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="src\log.h" />
     <ClInclude Include="src\quat.h" />
+    <ClInclude Include="src\rasterizer.h" />
     <ClInclude Include="structs.h" />
     <ClInclude Include="surface.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="triangle.h" />
-    <ClInclude Include="tutorials.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="vector3.h" />
     <ClInclude Include="vertex.h" />
@@ -202,11 +203,11 @@
     </ClCompile>
     <ClCompile Include="pg2_opengl.cpp" />
     <ClCompile Include="src\quat.cpp" />
+    <ClCompile Include="src\rasterizer.cpp" />
     <ClCompile Include="structs.cpp" />
     <ClCompile Include="surface.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="triangle.cpp" />
-    <ClCompile Include="tutorials.cpp" />
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="vector3.cpp" />
     <ClCompile Include="vertex.cpp" />

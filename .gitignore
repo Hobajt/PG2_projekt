@@ -1,0 +1,8 @@
+.vs/
+**/bin/
+**/bin_int/
+
+**/res/models/
+
+**.vcxproj.user
+**imgui.ini

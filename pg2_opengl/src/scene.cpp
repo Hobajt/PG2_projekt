@@ -59,7 +59,7 @@ void Scene::Draw() const {
 bool Scene::Load(const char* filepath) {
 	//load scene data from file
 	std::vector<Surface*> surfaces;
-	if (LoadOBJ(filepath, surfaces, materials, true) < 0) {
+	if (LoadOBJ(filepath, surfaces, materials, false) < 0) {
 		errlog("Failed to load scene '%s'.\n", filepath);
 		return false;
 	}

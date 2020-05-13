@@ -108,9 +108,9 @@ private:
 	bool state = false;
 	bool lastState = false;
 public:
-	inline void update(bool pressed) { lastState = state; state = pressed; }
 	inline bool pressed() const { return state && !lastState; }
 	inline bool released() const { return !state && lastState; }
+	inline bool update(bool isPressed) { lastState = state; state = isPressed; return pressed(); }
 };
 
 #endif

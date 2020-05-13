@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "matrix3x3.h"
+#include "quat.h"
 
 Matrix3x3::Matrix3x3() {
 	for (int r = 0; r < 3; ++r) {
@@ -35,6 +36,20 @@ Matrix3x3::Matrix3x3(const Vector3 basis_x, const Vector3 basis_y, const Vector3
 	m20_ = basis_x.z;
 	m21_ = basis_y.z;
 	m22_ = basis_z.z;
+}
+
+Matrix3x3::Matrix3x3(const quat& q) {
+	m00_ = 1.f - 2.f * q.y * q.y - 2.f * q.z * q.z;
+	m01_ = 2.f * q.x * q.y - 2.f * q.z * q.w;
+	m02_ = 2.f * q.x * q.z + 2.f * q.y * q.w;
+
+	m10_ = 2.f * q.x * q.y + 2.f * q.z * q.w;
+	m11_ = 1.f - 2.f * q.x * q.x - 2.f * q.z * q.z;
+	m12_ = 2.f * q.y * q.z - 2.f * q.x * q.w;
+
+	m20_ = 2.f * q.x * q.z - 2.f * q.y * q.w;
+	m21_ = 2.f * q.y * q.z + 2.f * q.x * q.w;
+	m22_ = 1.f - 2.f * q.x * q.x - 2.f * q.y * q.y;
 }
 
 Matrix3x3 Matrix3x3::Transpose() const {
@@ -102,4 +117,28 @@ std::ostream& operator<<(std::ostream& os, const Matrix3x3& m) {
 		<< " " << m.m10_ << ", " << m.m11_ << ", " << m.m12_ << std::endl
 		<< " " << m.m20_ << ", " << m.m21_ << ", " << m.m22_ << "]";
 	return os;
+}
+
+Matrix3x3 Matrix3x3::EulerX(float angleRad) {
+	return Matrix3x3(
+		1, 0, 0,
+		0, cosf(angleRad), sinf(angleRad),
+		0, -sinf(angleRad), cosf(angleRad)
+	);
+}
+
+Matrix3x3 Matrix3x3::EulerY(float angleRad) {
+	return Matrix3x3(
+		cosf(angleRad), 0, -sinf(angleRad),
+		0, 1, 0,
+		sinf(angleRad), 0, cosf(angleRad)
+	);
+}
+
+Matrix3x3 Matrix3x3::EulerZ(float angleRad) {
+	return Matrix3x3(
+		cosf(angleRad), sinf(angleRad), 0,
+		-sinf(angleRad), cosf(angleRad), 0,
+		0, 0, 1
+	);
 }

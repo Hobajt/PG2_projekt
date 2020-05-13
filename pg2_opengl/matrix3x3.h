@@ -4,6 +4,8 @@
 #include "vector3.h"
 #include <iostream>
 
+struct quat;
+
 /*! \class Matrix3x3
 \brief Reálná matice 3x3 uspoøádaná po øádcích.
 
@@ -28,6 +30,7 @@ public:
 			  const float m20, const float m21, const float m22);
 
 	Matrix3x3(const Vector3 basis_x, const Vector3 basis_y, const Vector3 basis_z);
+	Matrix3x3(const quat& q);
 
 	//! Transpozice matice.
 	/*!
@@ -65,6 +68,9 @@ public:
 
 	friend std::ostream& operator<<(std::ostream& os, const Matrix3x3& m);
 
+	static Matrix3x3 EulerX(float angleRad);
+	static Matrix3x3 EulerY(float angleRad);
+	static Matrix3x3 EulerZ(float angleRad);
 private:
 #pragma warning( push )
 #pragma warning ( disable : 4201 )

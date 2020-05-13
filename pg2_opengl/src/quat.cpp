@@ -121,10 +121,47 @@ quat quat::slerp(const quat& a, const quat& b, float t) {
 	return (a * ratioA) + (b * ratioB);
 }
 
+quat quat::fromEuler(const vec3f& eulerAngle) {
+	float c1 = cosf(eulerAngle.y * 0.5f);
+	float c2 = cosf(eulerAngle.x * 0.5f);
+	float c3 = cosf(eulerAngle.z * 0.5f);
+
+	float s1 = sinf(eulerAngle.y * 0.5f);
+	float s2 = sinf(eulerAngle.x * 0.5f);
+	float s3 = sinf(eulerAngle.z * 0.5f);
+
+	return quat(
+		s1 * s2 * c3 + c1 * c2 * s3,
+		s1 * c2 * c3 + c1 * s2 * s3,
+		c1 * s2 * c3 - s1 * c2 * s3,
+		c1 * c2 * c3 - s1 * s2 * s3
+	);
+}
+
+quat quat::fromEuler(float yaw, float pitch) {
+	float c1 = cosf(yaw * 0.5f);
+	float c2 = cosf(pitch * 0.5f);
+
+	float s1 = sinf(yaw * 0.5f);
+	float s2 = sinf(pitch * 0.5f);
+
+	return quat(
+		s1 * s2,
+		s1 * c2,
+		c1 * s2,
+		c1 * c2
+	);
+}
+
 //quat quat::slerp(const quat& r, float t) {
 //	sinf()
 //}
 
 quat operator*(float lhs, const quat& rhs) {
 	return rhs * lhs;
+}
+
+std::ostream& operator<<(std::ostream& os, const quat& q) {
+	os << "(" << q.x << ", " << q.y << ", " << q.z << ", " << q.w << ")";
+	return os;
 }

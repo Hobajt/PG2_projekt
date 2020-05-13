@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Vector3.h"
-#include "Matrix3x3.h"
+#include "vector3.h"
+#include "matrix3x3.h"
 
 struct quat {
 public:
@@ -54,6 +54,10 @@ public:
 	quat toAxisAngle() const;
 
 	static quat slerp(const quat& a, const quat& b, float t);
+	static quat fromEuler(const vec3f& eulerAngle);
+	static quat fromEuler(float yaw, float pitch);
+
+	friend std::ostream& operator << (std::ostream& os, const quat& q);
 };
 
 quat operator *(float lhs, const quat& rhs);

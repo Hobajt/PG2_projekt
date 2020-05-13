@@ -30,13 +30,22 @@ Rasterizer::Rasterizer(int width, int height, float fovY_deg, const vec3f& viewF
 	InitDevice();
 }
 
-void Rasterizer::LoadScene(const char* filepath, const char* vShaderPath, const char* fShaderPath) {
+void Rasterizer::LoadScene(const char* filepath) {
 	scene = Scene(filepath);
+}
+
+void Rasterizer::LoadShader(const char* vShaderPath, const char* fShaderPath) {
 	shader = ShaderProgram(vShaderPath, fShaderPath);
 }
 
 int Rasterizer::MainLoop() {
+	CameraController camCtrl = CameraController(camera, window);
 	shader.Bind();
+
+	mat4f M = mat4f();
+	M.so3(mat3f::EulerX(M_PI / 2));
+
+	mat4f MVP;
 
 	lastTime = glfwGetTime();
 	while (!glfwWindowShouldClose(window)) {
@@ -45,24 +54,24 @@ int Rasterizer::MainLoop() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		
 		//wireframe input toggle
-		wireframeToggle.update(glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS);
-		if (wireframeToggle.pressed()) {
+		if(wireframeToggle.update(glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)) {
 			wireframeState = !wireframeState;
 			glPolygonMode(GL_FRONT_AND_BACK, wireframeState ? GL_LINE : GL_FILL);
 		}
 
+		camCtrl.Update(deltaTime);
 		camera.Update();
 		//======================
 
-		//do stuff here
-		shader.UploadMat4("MVP", camera.VP.data());
 
-		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-			camera.MoveForward(0.1f);
-		else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-			camera.MoveForward(-0.1f);
 
+
+		MVP = camera.VP * M;
+		shader.UploadMat4("MVP", MVP.data());
 		scene.Draw();
+
+
+
 
 		//======================
 		glfwSwapBuffers(window);
@@ -166,6 +175,7 @@ void GLSettings() {
 
 	// GL_LOWER_LEFT (OpenGL) or GL_UPPER_LEFT (DirectX, Windows) and GL_NEGATIVE_ONE_TO_ONE or GL_ZERO_TO_ONE
 	glClipControl(GL_UPPER_LEFT, GL_NEGATIVE_ONE_TO_ONE);
+	//glClipControl(GL_LOWER_LEFT, GL_NEGATIVE_ONE_TO_ONE);
 
 	//enable depth test
 	glEnable(GL_DEPTH_TEST);

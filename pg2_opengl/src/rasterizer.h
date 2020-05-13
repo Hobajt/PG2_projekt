@@ -11,7 +11,8 @@ class Rasterizer {
 public:
 	Rasterizer(int width, int height, float fovY_deg, const vec3f& viewFrom, const vec3f& viewAt, float nearPlane, float farPlane);
 
-	void LoadScene(const char* filepath, const char* vShaderPath, const char* fShaderPath);
+	void LoadScene(const char* filepath);
+	void LoadShader(const char* vShaderPath, const char* fShaderPath);
 
 	int MainLoop();
 

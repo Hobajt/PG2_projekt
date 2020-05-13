@@ -2,6 +2,19 @@
 #include "camera.h"
 #include "mymath.h"
 
+constexpr float cam_rotationYLimit = (float)(M_PI_2 * 0.95);
+constexpr float cam_maxMouseSpeed = 80.f;
+constexpr float cam_movementSpeed = 100.f;
+constexpr float cam_rotationSpeed = 10.f;
+constexpr float cam_zoomSpeed = 10.f;
+
+//variables that pass info from callbacks to CamCtrl
+vec2f mousePos;
+bool isScrolling;
+float mouseScroll;
+
+//================================= Camera =================================
+
 Camera::Camera(const int width, const int height, const float fov_y, const Vector3& view_from, const Vector3& view_at, float nearPlane, float farPlane) {
 	width_ = width;
 	height_ = height;
@@ -61,11 +74,108 @@ void Camera::UpdateViewport(int w, int h) {
 	UpdateProjection(n, f);
 }
 
-void Camera::MoveForward(float dt) {
-	Vector3 ds = viewAt - viewFrom;
-	ds.Normalize();
-	ds *= dt;
+//================================= CameraController =================================
 
-	viewFrom += ds;
-	viewAt += ds;
+void GLFWcursorCallback(GLFWwindow* window, double x, double y) {
+	mousePos = { static_cast<float>(x), static_cast<float>(y) };
+}
+
+void GLFWscrollCallback(GLFWwindow* window, double x, double y) {
+	mouseScroll = -static_cast<float>(y);
+	isScrolling = true;
+}
+
+CameraController::CameraController(Camera& cam, GLFWwindow* win) : camera(&cam), window(win) {
+	glfwSetCursorPosCallback(window, GLFWcursorCallback);
+	glfwSetScrollCallback(window, GLFWscrollCallback);
+
+	originInitial = camera->viewFrom;
+	targetInitial = camera->viewAt;
+
+	Reset();
+}
+
+void CameraController::Update(float deltaTime) {
+	//camera reset button update
+	if (resetBtn.update(glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)) {
+		Reset();
+		return;
+	}
+
+	//toggle update
+	if (movementToggle.update(glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)) {
+		curveMovement = !curveMovement;
+	}
+
+	if (!curveMovement) {
+		//manual movement controls
+		ManualMovement(deltaTime);
+	}
+	else {
+		//movement on curve
+
+	}
+}
+
+void CameraController::Reset() {
+	//reset target/origin positions
+	camera->viewFrom = originInitial;
+	camera->viewAt = targetInitial;
+	viewOffset = targetInitial - originInitial;
+
+	//get initial distance
+	viewDistance = viewOffset.L2Norm();
+
+	//get initial rotation
+	vec3f d = viewOffset.normalized();
+	rotation = vec2f{atan2f(d.x, -d.z), -asinf(d.y)};
+
+	zoom = 1.f;
+
+	mat3f M = mat3f::EulerY(rotation.x) * mat3f::EulerX(rotation.y);
+	viewOffset = M * vec3f{ 0.f, 0.f, viewDistance };
+}
+
+void CameraController::ManualMovement(float dt) {
+	Camera& cam = *camera;
+
+	//read WASD controls
+	float y = static_cast<float>((int)(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) - (int)(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS));
+	float x = static_cast<float>((int)(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) - (int)(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS));
+
+	//read mouse input
+	vec2f mouseDelta = (mousePos - mouseLast).clamp(-cam_maxMouseSpeed, cam_maxMouseSpeed) * (1.f / cam_maxMouseSpeed);
+	mouseLast = mousePos;
+
+	//WASD movement - XZ plane
+	if (fabsf(x) + fabsf(y) > 0.1f) {
+		vec3f move = (cam.viewZ * -y + cam.viewX * x).normalize() * (dt * cam_movementSpeed);
+		cam.viewFrom += move;
+		cam.viewAt += move;
+	}
+
+	//mouse movement (hold LMB) - XY plane
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
+		vec3f move = (cam.viewY * mouseDelta.y + cam.viewX * -mouseDelta.x).normalize() * (dt * cam_movementSpeed);
+		cam.viewFrom += move;
+		cam.viewAt += move;
+	}
+
+	//mouse rotation (hold RMB)
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) == GLFW_PRESS) {
+		rotation += mouseDelta * dt * cam_rotationSpeed;
+		rotation.y = std::clamp(rotation.y, -cam_rotationYLimit, cam_rotationYLimit);
+
+		mat3f M = mat3f::EulerY(rotation.x) * mat3f::EulerX(rotation.y);
+		viewOffset = M * vec3f{ 0.f, 0.f, viewDistance };
+		cam.viewFrom = cam.viewAt + (viewOffset * zoom);
+	}
+
+	//zoom by scrolling
+	if (isScrolling) {
+		zoom += mouseScroll * dt * cam_zoomSpeed;
+		if (zoom < 0.1f) zoom = 0.1f;
+		cam.viewFrom = cam.viewAt + (viewOffset * zoom);
+		isScrolling = false;
+	}
 }

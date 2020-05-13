@@ -5,6 +5,11 @@
 #include "matrix3x3.h"
 #include "matrix4x4.h"
 
+#include "utils.h"
+#include "quat.h"
+
+struct GLFWwindow;
+
 /*! \class Camera
 \brief A simple pin-hole camera.
 
@@ -13,6 +18,7 @@
 \date 2018-2019
 */
 class Camera {
+	friend class CameraController;
 public:
 	Camera() {}
 
@@ -26,8 +32,6 @@ public:
 
 	//Call on viewport change (window resize).
 	void UpdateViewport(int width, int height);
-
-	void MoveForward(float dt);
 
 	inline int GetWidth() const { return width_; }
 	inline int GetHeight() const { return height_; }
@@ -57,4 +61,33 @@ private:
 	float f = 100.f;
 };
 
+
+class CameraController {
+public:
+	CameraController(Camera& cam, GLFWwindow* window);
+	void Update(float deltaTime);
+	void Reset();
+private:
+	void ManualMovement(float deltaTime);
+private:
+	Camera* camera;
+	GLFWwindow* window;
+
+	InputButton resetBtn = {};
+	InputButton movementToggle = {};
+	bool curveMovement = false;
+
+	vec2f mouseLast = vec2f{ 0.f, 0.f };
+
+	//current rotation
+	vec2f rotation;
+
+	//original camera viewFrom/viewAt coords
+	vec3f originInitial;
+	vec3f targetInitial;
+
+	vec3f viewOffset;		//vector from viewAt to viewFrom
+	float viewDistance;		//original distance between viewAt & from
+	float zoom;
+};
 #endif

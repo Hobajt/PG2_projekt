@@ -175,5 +175,7 @@
     <None Include="res\shaders\basic_shader.vert">
       <Filter>Source Files\opengl</Filter>
     </None>
+    <None Include="res\shaders\shader2.vert" />
+    <None Include="res\shaders\shader2.frag" />
   </ItemGroup>
 </Project>

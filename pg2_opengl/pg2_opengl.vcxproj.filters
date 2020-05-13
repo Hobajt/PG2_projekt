@@ -177,5 +177,7 @@
     </None>
     <None Include="res\shaders\shader2.vert" />
     <None Include="res\shaders\shader2.frag" />
+    <None Include="res\shaders\normal_shader.vert" />
+    <None Include="res\shaders\normal_shader.frag" />
   </ItemGroup>
 </Project>

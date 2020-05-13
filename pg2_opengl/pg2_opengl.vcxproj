@@ -219,6 +219,8 @@
   <ItemGroup>
     <None Include="res\shaders\basic_shader.frag" />
     <None Include="res\shaders\basic_shader.vert" />
+    <None Include="res\shaders\normal_shader.frag" />
+    <None Include="res\shaders\normal_shader.vert" />
     <None Include="res\shaders\shader2.frag" />
     <None Include="res\shaders\shader2.vert" />
   </ItemGroup>

@@ -44,6 +44,8 @@ inline Vector3 reflect(const Vector3& v, const Vector3& n) {
 	return (2.0f * (v.DotProduct(n))) * n - v;
 }
 
+using BYTE = unsigned char;
+
 unsigned long long QuickHash(const BYTE* data, const size_t length, unsigned long long mix = 0);
 
 #endif

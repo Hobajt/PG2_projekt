@@ -46,6 +46,9 @@ int Rasterizer::MainLoop() {
 	M.so3(mat3f::EulerX(M_PI / 2));
 
 	mat4f MVP;
+	mat4f MV, MVN;
+
+	mat4f N = mat4f::EuclideanInverse(M).transpose();
 
 	lastTime = glfwGetTime();
 	while (!glfwWindowShouldClose(window)) {
@@ -64,6 +67,12 @@ int Rasterizer::MainLoop() {
 		//======================
 
 
+		MV = camera.V * M;
+		MVN = N * MV;
+		shader.UploadMat4("MV", MV.data());
+		shader.UploadMat4("MVN", MVN.data());
+		//shader.UploadMat4("P", camera.P.data());
+		shader.UploadMat4("M", M.data());
 
 
 		MVP = camera.VP * M;

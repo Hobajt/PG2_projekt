@@ -1,9 +1,11 @@
 #version 460 core
+
 out vec4 FragColor;
 
-in vec3 normal_es;
+in vec3 v_normal;
 
 void main( void ) {
-	FragColor = vec4( normal_es.rgb, 1.0f );
-//	FragColor = vec4( normal_es.r, normal_es.g, normal_es.r, 1.f);
+//	vec3 clr = vec3(v_normal.b, v_normal.r, v_normal.g);	
+	vec3 clr = (v_normal+1)*0.5f;
+	FragColor = vec4(clr, 1.f);
 }

@@ -7,6 +7,7 @@ constexpr float cam_maxMouseSpeed = 80.f;
 constexpr float cam_movementSpeed = 100.f;
 constexpr float cam_rotationSpeed = 10.f;
 constexpr float cam_zoomSpeed = 10.f;
+constexpr float cam_curveMovementSpeed = 0.1f;
 
 //variables that pass info from callbacks to CamCtrl
 vec2f mousePos;
@@ -113,7 +114,7 @@ void CameraController::Update(float deltaTime) {
 	}
 	else {
 		//movement on curve
-
+		CurveMovement(deltaTime);
 	}
 }
 
@@ -128,12 +129,13 @@ void CameraController::Reset() {
 
 	//get initial rotation
 	vec3f d = viewOffset.normalized();
-	rotation = vec2f{atan2f(d.x, -d.z), -asinf(d.y)};
+	//rotation = vec2f{atan2f(d.y, d.x) + (float)M_PI_2, acosf(d.z) };
+	rotation = vec2f{ (float)M_PI, 0.f };
 
 	zoom = 1.f;
 
-	mat3f M = mat3f::EulerY(rotation.x) * mat3f::EulerX(rotation.y);
-	viewOffset = M * vec3f{ 0.f, 0.f, viewDistance };
+	mat3f M = mat3f::EulerZ(rotation.x) * mat3f::EulerX(-rotation.y);
+	viewOffset = M * vec3f{ 0.f, viewDistance, 0.f };
 }
 
 void CameraController::ManualMovement(float dt) {
@@ -166,8 +168,8 @@ void CameraController::ManualMovement(float dt) {
 		rotation += mouseDelta * dt * cam_rotationSpeed;
 		rotation.y = std::clamp(rotation.y, -cam_rotationYLimit, cam_rotationYLimit);
 
-		mat3f M = mat3f::EulerY(rotation.x) * mat3f::EulerX(rotation.y);
-		viewOffset = M * vec3f{ 0.f, 0.f, viewDistance };
+		mat3f M = mat3f::EulerZ(rotation.x) * mat3f::EulerX(-rotation.y);
+		viewOffset = M * vec3f{ 0.f, viewDistance, 0.f };
 		cam.viewFrom = cam.viewAt + (viewOffset * zoom);
 	}
 
@@ -178,4 +180,13 @@ void CameraController::ManualMovement(float dt) {
 		cam.viewFrom = cam.viewAt + (viewOffset * zoom);
 		isScrolling = false;
 	}
+}
+
+void CameraController::CurveMovement(float dt) {
+	t += dt * cam_curveMovementSpeed;
+	while (t > 1.f)
+		t -= 1.f;
+
+	Camera& cam = *camera;
+	cam.viewFrom = cam.viewAt + (viewDistance * movementCurve.Sample(t));
 }

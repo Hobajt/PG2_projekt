@@ -239,3 +239,12 @@ std::ostream& operator<<(std::ostream& os, const Matrix4x4& m) {
 		<< " " << m.m30_ << ", " << m.m31_ << ", " << m.m32_ << ", " << m.m33_ << "]";
 	return os;
 }
+
+vec4f operator*(const vec4f& v, const Matrix4x4& m) {
+	return vec4f{
+		v.x * m.m00_ + v.y * m.m10_ + v.z * m.m20_ + v.w * m.m30_,
+		v.x * m.m01_ + v.y * m.m11_ + v.z * m.m21_ + v.w * m.m31_,
+		v.x * m.m02_ + v.y * m.m12_ + v.z * m.m22_ + v.w * m.m32_,
+		v.x * m.m03_ + v.y * m.m13_ + v.z * m.m23_ + v.w * m.m33_
+	};
+}

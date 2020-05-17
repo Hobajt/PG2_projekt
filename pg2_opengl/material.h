@@ -8,7 +8,7 @@
 /*! \def NO_TEXTURES
 \brief Maximální poèet textur pøiøazených materiálu.
 */
-#define NO_TEXTURES 6
+#define NO_TEXTURES 7
 
 /*! \def IOR_AIR
 \brief Index lomu vzduchu za normálního tlaku.
@@ -30,10 +30,20 @@ enum class Shader : char { NORMAL = 1, LAMBERT = 2, PHONG = 3, GLASS = 4, PBR = 
 
 #pragma pack(push, 1)
 struct GLMaterial {
-	Color3f clrDiffuse;			//12B 
+	Color3f diffuse;			//12B 
 	GLbyte pad0[4];				//+4 = 16 B
 	GLuint64 texDiffuse = 0;	//8 B
 	GLbyte pad1[8];				//+8 = 16 B
+
+	Color3f rma;				//12B 
+	GLbyte pad2[4];				//+4 = 16 B
+	GLuint64 texRMA = 0;		//8 B
+	GLbyte pad3[8];				//+8 = 16 B
+
+	Color3f normal;				//12B 
+	GLbyte pad4[4];				//+4 = 16 B
+	GLuint64 texNormal = 0;		//8 B
+	GLbyte pad5[8];				//+8 = 16 B
 };
 #pragma pack(pop)
 
@@ -138,6 +148,7 @@ public:
 	static const char kOpacityMapSlot; /*!< Èíslo slotu transparentní textury. */
 	static const char kRoughnessMapSlot; /*!< Èíslo slotu textury drsnosti. */
 	static const char kMetallicnessMapSlot; /*!< Èíslo slotu textury kovovosti. */
+	static const char kRMAMapSlot;
 
 	int idx = idxCounter++;
 private:

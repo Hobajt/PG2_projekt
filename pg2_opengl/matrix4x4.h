@@ -96,6 +96,8 @@ public:
 	friend Matrix4x4 operator*(const Matrix4x4& a, const Matrix4x4& b);
 
 	friend std::ostream& operator<<(std::ostream& os, const Matrix4x4& m);
+
+	friend vec4f operator*(const vec4f& v, const Matrix4x4& m);
 private:
 #pragma warning( push )
 #pragma warning ( disable : 4201 )

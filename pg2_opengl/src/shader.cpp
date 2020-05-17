@@ -58,40 +58,48 @@ void ShaderProgram::Bind() const {
 	glUseProgram(programID);
 }
 
-void ShaderProgram::UploadMat3(const char* name, float* data) {
+#define shaderLog(logging, ...) if((logging)) { warnlog(__VA_ARGS__); }
+
+void ShaderProgram::UploadMat3(const char* name, float* data, bool log) {
 	const GLint location = glGetUniformLocation(programID, name);
-	if (location == -1) errlog("Matrix '%s' not found in active shader.\n", name);
+	if (location == -1) { shaderLog(log, "Matrix '%s' not found in active shader.\n", name); }
 	else glUniformMatrix3fv(location, 1, GL_TRUE, data);
 }
 
-void ShaderProgram::UploadMat4(const char* name, float* data) {
+void ShaderProgram::UploadMat4(const char* name, float* data, bool log) {
 	const GLint location = glGetUniformLocation(programID, name);
-	if (location == -1) errlog("Matrix '%s' not found in active shader.\n", name);
+	if (location == -1) { shaderLog(log, "Matrix '%s' not found in active shader.\n", name); }
 	else glUniformMatrix4fv(location, 1, GL_TRUE, data);
 }
 
-void ShaderProgram::UploadFloat3(const char* name, float* data) {
+void ShaderProgram::UploadFloat3(const char* name, float* data, bool log) {
 	const GLint location = glGetUniformLocation(programID, name);
-	if (location == -1) errlog("Variable '%s' not found in active shader.\n", name);
+	if (location == -1) { shaderLog(log, "Variable '%s' not found in active shader.\n", name); }
 	else glUniform3fv(location, 1, data);
 }
 
-void ShaderProgram::UploadFloat4(const char* name, float* data) {
+void ShaderProgram::UploadFloat4(const char* name, float* data, bool log) {
 	const GLint location = glGetUniformLocation(programID, name);
-	if (location == -1) errlog("Variable '%s' not found in active shader.\n", name);
+	if (location == -1) { shaderLog(log, "Variable '%s' not found in active shader.\n", name); }
 	else glUniform4fv(location, 1, data);
 }
 
-void ShaderProgram::UploadInt(const char* name, int data) {
+void ShaderProgram::UploadInt(const char* name, int data, bool log) {
 	const GLint location = glGetUniformLocation(programID, name);
-	if (location == -1) errlog("Variable '%s' not found in active shader.\n", name);
+	if (location == -1) { shaderLog(log, "Variable '%s' not found in active shader.\n", name); }
 	else glUniform1i(location, data);
 }
 
-void ShaderProgram::UploadFloat(const char* name, float data) {
+void ShaderProgram::UploadFloat(const char* name, float data, bool log) {
 	const GLint location = glGetUniformLocation(programID, name);
-	if (location == -1) errlog("Variable '%s' not found in active shader.\n", name);
+	if (location == -1) { shaderLog(log, "Variable '%s' not found in active shader.\n", name); }
 	else glUniform1f(location, data);
+}
+
+void ShaderProgram::UploadARBHandle(const char* name, GLuint64 data, bool log) {
+	const GLint location = glGetUniformLocation(programID, name);
+	if (location == -1) { shaderLog(log, "Variable '%s' not found in active shader.\n", name); }
+	else glUniformHandleui64ARB(location, data);
 }
 
 //================================= Loading functions =================================

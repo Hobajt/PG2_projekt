@@ -473,3 +473,56 @@ FIBITMAP* Custom_FreeImage_ConvertToRGBAF(FIBITMAP* dib) {
 
 	return dst;
 }
+
+void CreateBindlessTexture(GLuint& texture, GLuint64& handle, const int width, const int height, const GLvoid* data, GLenum dtype) {
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);		//bind empty texture object to the target
+
+	//set the texture wrapping/filtering options
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	//copy data from the host buffer
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, dtype, data);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, 0);			//unbind the newly created texture from the target
+	handle = glGetTextureHandleARB(texture);	//produces a handle representing the texture in a shader function
+	glMakeTextureHandleResidentARB(handle);
+}
+
+BindlessTexture LoadLODTextures(const std::initializer_list<const char*>& file_names) {
+	BindlessTexture res = {};
+
+	GLuint tex_prefiltered_env_map_ = 0;
+
+	const GLint max_level = GLint(file_names.size()) - 1; // assume we have a list of images representing different levels of a map
+	glGenTextures(1, &tex_prefiltered_env_map_);
+	glBindTexture(GL_TEXTURE_2D, tex_prefiltered_env_map_);
+	if (glIsTexture(tex_prefiltered_env_map_)) {
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, max_level);
+		int width, height;
+		GLint level = 0;
+		for (const char* filepath : file_names) {
+			Texture3f prefiltered_env_map = Texture3f(filepath);
+			// for HDR images use GL_RGB32F or GL_RGB16F as internal format !!!
+			glTexImage2D(GL_TEXTURE_2D, level, GL_RGB32F, prefiltered_env_map.width(), prefiltered_env_map.height(), 0, GL_RGB, GL_FLOAT, prefiltered_env_map.data());
+			width = prefiltered_env_map.width() / 2;
+			height = prefiltered_env_map.height() / 2;
+			level++;
+		}
+	}
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	res.id = tex_prefiltered_env_map_;
+	res.handle = glGetTextureHandleARB(tex_prefiltered_env_map_);
+	glMakeTextureHandleResidentARB(res.handle);
+
+	return res;
+}

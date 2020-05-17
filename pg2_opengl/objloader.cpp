@@ -156,6 +156,12 @@ int LoadMTL(const char* file_name, const char* path, std::vector<Material*>& mat
 					std::string full_name = std::string(path).append(image_file_name);
 					material->set_texture(Material::kNormalMapSlot, TextureProxy(full_name, already_loaded_textures));
 				}
+				else if (strstr(tmp, "map_RMA") == tmp) // normal map
+				{
+					sscanf(tmp, "%*s %s", image_file_name);
+					std::string full_name = std::string(path).append(image_file_name);
+					material->set_texture(Material::kRMAMapSlot, TextureProxy(full_name, already_loaded_textures));
+				}
 				else if (strstr(tmp, "map_D") == tmp) // opacity map
 				{
 					sscanf(tmp, "%*s %s", image_file_name);

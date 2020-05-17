@@ -99,6 +99,12 @@
     <ClInclude Include="src\shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\curves.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -167,6 +173,9 @@
     <ClCompile Include="src\shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\curves.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\basic_shader.frag">
@@ -175,9 +184,11 @@
     <None Include="res\shaders\basic_shader.vert">
       <Filter>Source Files\opengl</Filter>
     </None>
-    <None Include="res\shaders\shader2.vert" />
-    <None Include="res\shaders\shader2.frag" />
     <None Include="res\shaders\normal_shader.vert" />
     <None Include="res\shaders\normal_shader.frag" />
+    <None Include="res\shaders\phong_shader.frag" />
+    <None Include="res\shaders\phong_shader.vert" />
+    <None Include="res\shaders\ct_shader.vert" />
+    <None Include="res\shaders\ct_shader.frag" />
   </ItemGroup>
 </Project>

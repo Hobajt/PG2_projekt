@@ -39,10 +39,13 @@ struct Normal3f : public Vertex3f {
 	Normal3f operator* (const float a) const;
 };
 
-struct Coord2f { float u, v; }; // texture coord structure
+struct Coord2f {
+	float u, v; 
 
-Coord2f operator+ (const Coord2f& x, const Coord2f& y);
-Coord2f operator- (const Coord2f& x, const Coord2f& y);
+	friend Coord2f operator+ (const Coord2f& x, const Coord2f& y);
+	friend Coord2f operator- (const Coord2f& x, const Coord2f& y);
+}; // texture coord structure
+
 
 struct Triangle3ui { unsigned int v0, v1, v2; }; // indicies of a single triangle, the struct must match certain format, e.g. RTC_FORMAT_UINT3
 

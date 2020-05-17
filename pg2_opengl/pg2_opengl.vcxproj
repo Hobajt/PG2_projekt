@@ -174,6 +174,8 @@
     <ClInclude Include="mymath.h" />
     <ClInclude Include="objloader.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="src\curves.h" />
+    <ClInclude Include="src\Light.h" />
     <ClInclude Include="src\log.h" />
     <ClInclude Include="src\quat.h" />
     <ClInclude Include="src\rasterizer.h" />
@@ -204,6 +206,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="pg2_opengl.cpp" />
+    <ClCompile Include="src\curves.cpp" />
     <ClCompile Include="src\quat.cpp" />
     <ClCompile Include="src\rasterizer.cpp" />
     <ClCompile Include="src\scene.cpp" />
@@ -219,10 +222,12 @@
   <ItemGroup>
     <None Include="res\shaders\basic_shader.frag" />
     <None Include="res\shaders\basic_shader.vert" />
+    <None Include="res\shaders\ct_shader.frag" />
+    <None Include="res\shaders\ct_shader.vert" />
     <None Include="res\shaders\normal_shader.frag" />
     <None Include="res\shaders\normal_shader.vert" />
-    <None Include="res\shaders\shader2.frag" />
-    <None Include="res\shaders\shader2.vert" />
+    <None Include="res\shaders\phong_shader.frag" />
+    <None Include="res\shaders\phong_shader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -159,4 +159,8 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const vec2f& v);
 };
 
+struct vec4f { 
+	float x, y, z, w; 
+};
+
 #endif

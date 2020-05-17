@@ -23,6 +23,15 @@ output.Save( "denoised.exr" );
 \date 2020
 */
 
+struct BindlessTexture {
+	GLuint id;
+	GLuint64 handle;
+};
+
+void CreateBindlessTexture(GLuint& texture, GLuint64& handle, const int width, const int height, const GLvoid* data, GLenum dtype = GL_UNSIGNED_BYTE);
+
+BindlessTexture LoadLODTextures(const std::initializer_list<const char*>& file_names);
+
 template <class T, FREE_IMAGE_TYPE F>
 class Texture {
 public:
@@ -135,6 +144,21 @@ public:
 		data = nullptr;
 	}
 
+
+	static BindlessTexture LoadBindless(const char* filepath, bool flt = true) {
+		BindlessTexture bt = {};
+
+		Texture<T, F> tex = Texture<T, F>(filepath);
+		if (tex.data_.size() < 1) {
+			printf("Failed to load bindless texture '%s'.", filepath);
+			return bt;
+		}
+
+		GLenum dtype = flt ? GL_FLOAT : GL_UNSIGNED_BYTE;
+		CreateBindlessTexture(bt.id, bt.handle, tex.width(), tex.height(), tex.data(), dtype);
+
+		return bt;
+	}
 private:
 	std::vector<T> data_;
 

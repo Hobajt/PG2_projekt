@@ -5,6 +5,8 @@
 #include "utils.h"
 #include "glutils.h"
 
+#include "texture.h"
+
 double lastTime = 0.0;
 
 InputButton wireframeToggle;
@@ -38,22 +40,47 @@ void Rasterizer::LoadShader(const char* vShaderPath, const char* fShaderPath) {
 	shader = ShaderProgram(vShaderPath, fShaderPath);
 }
 
+void Rasterizer::LoadIrradianceMap(const char* filepath) {
+	tex_irrMap = Texture3f::LoadBindless(filepath);
+	shader.UploadARBHandle("tex_irradianceMap", tex_irrMap.handle);
+}
+
+void Rasterizer::LoadPrefilteredEnvMap(const std::initializer_list<const char*>& filepaths) {
+	tex_envMap = LoadLODTextures(filepaths);
+	shader.UploadARBHandle("tex_environmentMap", tex_envMap.handle);
+	shader.UploadInt("envMap_maxLevel", filepaths.size());
+}
+
+void Rasterizer::LoadGGXIntegrationMap(const char* filepath) {
+	tex_intMap = Texture3f::LoadBindless(filepath);
+	shader.UploadARBHandle("tex_integrationMap", tex_intMap.handle);
+}
+
 int Rasterizer::MainLoop() {
+	errlog("--------------------------------\n");
+
 	CameraController camCtrl = CameraController(camera, window);
 	shader.Bind();
 
-	mat4f M = mat4f();
-	M.so3(mat3f::EulerX(M_PI / 2));
+	//Upload light
+	shader.UploadFloat3("light_attenuation", light.attenuation.data);
+	shader.UploadFloat3("light_color", light.color.data);
+	shader.UploadFloat3("p_light", light.position.data);
 
-	mat4f MVP;
-	mat4f MV, MVN;
+	mat4f M, N, MVP, MVN, MV;
 
-	mat4f N = mat4f::EuclideanInverse(M).transpose();
+	M = mat4f(); 
+	//M.so3(mat3f::EulerX((float)(M_PI * 0.5f)));
+	N = mat4f::EuclideanInverse(M).transpose();
+
+	shader.UploadMat4("M", M.data());
+	shader.UploadMat4("MN", N.data());
 
 	lastTime = glfwGetTime();
 	while (!glfwWindowShouldClose(window)) {
 		UpdateDeltaTime();
-		glClearColor(0.2f, 0.3f, 0.3f, 1.f);
+		//glClearColor(0.2f, 0.3f, 0.3f, 1.f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		
 		//wireframe input toggle
@@ -62,25 +89,22 @@ int Rasterizer::MainLoop() {
 			glPolygonMode(GL_FRONT_AND_BACK, wireframeState ? GL_LINE : GL_FILL);
 		}
 
+		//camera update - movement & matrices
 		camCtrl.Update(deltaTime);
 		camera.Update();
 		//======================
 
-
 		MV = camera.V * M;
-		MVN = N * MV;
-		shader.UploadMat4("MV", MV.data());
-		shader.UploadMat4("MVN", MVN.data());
-		//shader.UploadMat4("P", camera.P.data());
-		shader.UploadMat4("M", M.data());
-
-
+		MVN = camera.V * N;
 		MVP = camera.VP * M;
+
+		shader.UploadMat4("MV", MV.data(), false);
+		shader.UploadMat4("MVN", MVN.data(), false);
 		shader.UploadMat4("MVP", MVP.data());
+
+		shader.UploadFloat3("p_eye", camera.ViewFrom().data, false);
+
 		scene.Draw();
-
-
-
 
 		//======================
 		glfwSwapBuffers(window);

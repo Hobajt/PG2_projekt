@@ -8,6 +8,8 @@
 #include "utils.h"
 #include "quat.h"
 
+#include "curves.h"
+
 struct GLFWwindow;
 
 /*! \class Camera
@@ -35,6 +37,8 @@ public:
 
 	inline int GetWidth() const { return width_; }
 	inline int GetHeight() const { return height_; }
+
+	inline vec3f ViewFrom() const { return viewFrom; }
 public:
 	mat4f P;
 	mat4f V;
@@ -51,7 +55,7 @@ private:
 
 	Vector3 viewFrom; // ray origin or eye or O
 	Vector3 viewAt; // target T
-	Vector3 up_{ Vector3(0.0f, 1.0f, 0.0f) }; // up vector
+	Vector3 up_{ Vector3(0.0f, 0.0f, 1.0f) }; // up vector
 
 	float f_y_{ 1.0f }; // focal lenght (px)
 
@@ -69,13 +73,14 @@ public:
 	void Reset();
 private:
 	void ManualMovement(float deltaTime);
+	void CurveMovement(float deltaTime);
 private:
 	Camera* camera;
 	GLFWwindow* window;
 
 	InputButton resetBtn = {};
 	InputButton movementToggle = {};
-	bool curveMovement = false;
+	bool curveMovement = true;
 
 	vec2f mouseLast = vec2f{ 0.f, 0.f };
 
@@ -89,5 +94,9 @@ private:
 	vec3f viewOffset;		//vector from viewAt to viewFrom
 	float viewDistance;		//original distance between viewAt & from
 	float zoom;
+
+	//movement on curve params
+	BezierSpline movementCurve;
+	float t = 0.f;
 };
 #endif

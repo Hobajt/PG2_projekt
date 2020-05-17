@@ -73,7 +73,7 @@ void main( void ) {
 
 	//normal
 	vec3 normal = data.v_normal;
-//	if(mat.texNormal != 0) normal = data.TBN * normalize(2.f * Tex2D(mat.texNormal, data.texCoords) - 1f);
+	if(mat.texNormal != 0) normal = data.TBN * normalize(2.f * Tex2D(mat.texNormal, data.texCoords) - 1f);
 	if(dot(normal, v_view) < 0)
 		normal *= -1.f;
 

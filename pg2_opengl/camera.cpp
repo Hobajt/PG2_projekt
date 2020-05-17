@@ -4,7 +4,7 @@
 
 constexpr float cam_rotationYLimit = (float)(M_PI_2 * 0.95);
 constexpr float cam_maxMouseSpeed = 80.f;
-constexpr float cam_movementSpeed = 100.f;
+constexpr float cam_movementSpeed = 50.f;
 constexpr float cam_rotationSpeed = 10.f;
 constexpr float cam_zoomSpeed = 10.f;
 constexpr float cam_curveMovementSpeed = 0.1f;

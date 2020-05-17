@@ -33,6 +33,8 @@ uniform uint64_t tex_integrationMap;
 
 uniform int envMap_maxLevel;
 
+uniform int forceColorRMA;
+
 //====== Material structure ======
 struct Material {
 	vec3 diffuse;
@@ -71,20 +73,28 @@ void main( void ) {
 
 	//normal
 	vec3 normal = data.v_normal;
-	if(mat.texNormal != 0) normal = data.TBN * normalize(2.f * Tex2D(mat.texNormal, data.texCoords) - 1f);
+//	if(mat.texNormal != 0) normal = data.TBN * normalize(2.f * Tex2D(mat.texNormal, data.texCoords) - 1f);
 	if(dot(normal, v_view) < 0)
 		normal *= -1.f;
 
 	//RMA,ior
 	vec3 rma;
+	float roughness; 
+	float metalness;
 	if(mat.texRma != 0)
 		rma = Tex2D(mat.texRma, data.texCoords);
 	else {
 		rma = mat.rma;
 		rma.z = 1.f;	//non-texture z-coord contains ior instead of ao
 	}
-	float roughness = rma.x;
-	float metalness = rma.y;
+	if(forceColorRMA != 0) {
+		roughness = mat.rma.x;
+		metalness = mat.rma.y;
+	}
+	else {
+		roughness = rma.x;
+		metalness = rma.y;
+	}
 	float ao		= rma.z;
 
 	float ior = mat.rma.z;
@@ -126,6 +136,7 @@ void main( void ) {
 	clr = pow(clr, vec3(1.0/2.2)); 
 
 	FragColor = vec4(clr, 1.f);
+//	FragColor = vec4((normal+1)*0.5,1.0);
 }
 
 //====== Functions ======

@@ -5,6 +5,7 @@ Potřebuje složku **libs/** s knihovnama na úrovni složky pg2 (takže mimo tu
 ## Ovládání:
 - P - wireframe mode
 - O - přepíná mezi pohybem po křivce a manuálním ovládáním
+- F/G - rotace scény doleva/doprava
 
 U manuálního ovládání:
   - WASD - pohyb dopředu/dostrany

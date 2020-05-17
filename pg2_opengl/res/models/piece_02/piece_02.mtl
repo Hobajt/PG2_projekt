@@ -3,7 +3,7 @@
 
 newmtl white_plastic
 	Ns 1.0
-	Pr 0.005
+	Pr 0.01
 	Ni 1.5
 	Kd 1.0 1.0 1.0
 	map_Kd scuffed-plastic6-alb.png

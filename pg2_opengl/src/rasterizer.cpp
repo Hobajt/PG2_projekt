@@ -67,14 +67,22 @@ int Rasterizer::MainLoop() {
 	shader.UploadFloat3("light_color", light.color.data);
 	shader.UploadFloat3("p_light", light.position.data);
 
+	shader.UploadInt("forceColorRMA", 1);
+
 	mat4f M, N, MVP, MVN, MV;
 
 	M = mat4f(); 
 	//M.so3(mat3f::EulerX((float)(M_PI * 0.5f)));
 	N = mat4f::EuclideanInverse(M).transpose();
 
-	shader.UploadMat4("M", M.data());
-	shader.UploadMat4("MN", N.data());
+	//Call once to display debug messages
+	shader.UploadMat4("M", M.data(), true);
+	shader.UploadMat4("MN", N.data(), true);
+	shader.UploadMat4("MV", MV.data(), true);
+	shader.UploadMat4("MVN", MVN.data(), true);
+	shader.UploadMat4("MVP", MVP.data(), true);
+	shader.UploadFloat3("p_eye", camera.ViewFrom().data, true);
+
 
 	lastTime = glfwGetTime();
 	while (!glfwWindowShouldClose(window)) {
@@ -98,11 +106,22 @@ int Rasterizer::MainLoop() {
 		MVN = camera.V * N;
 		MVP = camera.VP * M;
 
+		shader.UploadMat4("M", M.data(), false);
+		shader.UploadMat4("MN", N.data(), false);
 		shader.UploadMat4("MV", MV.data(), false);
 		shader.UploadMat4("MVN", MVN.data(), false);
-		shader.UploadMat4("MVP", MVP.data());
+		shader.UploadMat4("MVP", MVP.data(), false);
 
 		shader.UploadFloat3("p_eye", camera.ViewFrom().data, false);
+
+		if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
+			M.so3(M.so3() * mat3f::EulerY(M_PI * deltaTime * 0.5f));
+			N = mat4f::EuclideanInverse(M).transpose();
+		}
+		else if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS) {
+			M.so3(M.so3() * mat3f::EulerY(-M_PI * deltaTime * 0.5f));
+			N = mat4f::EuclideanInverse(M).transpose();
+		}
 
 		scene.Draw();
 
